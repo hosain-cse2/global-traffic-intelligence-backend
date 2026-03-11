@@ -1,10 +1,18 @@
 import type { Request, Response } from "express";
-import { login } from "../services/auth.service.js";
+import { login, type LoginResult } from "../services/auth.service.js";
 
-export async function loginController(req: Request, res: Response) {
+interface LoginRequestBody {
+  email: string;
+  password: string;
+}
+
+export async function loginController(
+  req: Request<unknown, unknown, LoginRequestBody>,
+  res: Response<LoginResult | { message: string }>,
+): Promise<void> {
   try {
     const { email, password } = req.body;
-    const result = await login(email, password);
+    const result: LoginResult = await login(email, password);
 
     res.json(result);
   } catch (error) {

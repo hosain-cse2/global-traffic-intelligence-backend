@@ -1,11 +1,24 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import type { User } from "@prisma/client";
 import { prisma } from "../db/prisma.js";
 
-const JWT_SECRET = process.env.JWT_SECRET || "supersecret";
+const JWT_SECRET: string = process.env.JWT_SECRET ?? "supersecret";
 
-export async function login(email: string, password: string) {
-  const user = await prisma.user.findUnique({
+export interface AuthenticatedUser {
+  id: User["id"];
+  email: User["email"];
+  firstName: User["firstName"];
+  lastName: User["lastName"];
+}
+
+export interface LoginResult {
+  token: string;
+  user: AuthenticatedUser;
+}
+
+export async function login(email: string, password: string): Promise<LoginResult> {
+  const user: User | null = await prisma.user.findUnique({
     where: { email },
   });
 
@@ -13,13 +26,13 @@ export async function login(email: string, password: string) {
     throw new Error("Invalid credentials");
   }
 
-  const passwordValid = await bcrypt.compare(password, user.passwordHash);
+  const passwordValid: boolean = await bcrypt.compare(password, user.passwordHash);
 
   if (!passwordValid) {
     throw new Error("Invalid credentials");
   }
 
-  const token = jwt.sign(
+  const token: string = jwt.sign(
     {
       userId: user.id,
       email: user.email,

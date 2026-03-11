@@ -1,9 +1,9 @@
-import express from "express";
+import express, { type Express } from "express";
 import healthRouter from "./routes/health.js";
 import authRoutes from "./routes/auth.routes.js";
 
-const app = express();
-const PORT = 3000;
+const app: Express = express();
+const PORT: number = 3000;
 
 app.use(express.json());
 
