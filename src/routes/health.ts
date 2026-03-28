@@ -1,11 +1,11 @@
 import { Router, type Request, type Response } from "express";
 
-const healthRouter: Router = Router();
+const healthRoutes: Router = Router();
 
-healthRouter.get("/", (_req: Request, res: Response) => {
+healthRoutes.get("/", (_req: Request, res: Response) => {
   res.status(200).json({
     status: "ok",
   });
 });
 
-export default healthRouter;
+export default healthRoutes;

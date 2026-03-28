@@ -3,6 +3,8 @@ import jwt from "jsonwebtoken";
 import type { User } from "@prisma/client";
 import { prisma } from "../db/prisma.js";
 
+console.log({ JWT_SECRET: process.env.JWT_SECRET });
+
 const JWT_SECRET: string = process.env.JWT_SECRET ?? "supersecret";
 
 export interface AuthenticatedUser {
@@ -17,7 +19,10 @@ export interface LoginResult {
   user: AuthenticatedUser;
 }
 
-export async function login(email: string, password: string): Promise<LoginResult> {
+export async function login(
+  email: string,
+  password: string,
+): Promise<LoginResult> {
   const user: User | null = await prisma.user.findUnique({
     where: { email },
   });
@@ -26,7 +31,10 @@ export async function login(email: string, password: string): Promise<LoginResul
     throw new Error("Invalid credentials");
   }
 
-  const passwordValid: boolean = await bcrypt.compare(password, user.passwordHash);
+  const passwordValid: boolean = await bcrypt.compare(
+    password,
+    user.passwordHash,
+  );
 
   if (!passwordValid) {
     throw new Error("Invalid credentials");
