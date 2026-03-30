@@ -3,8 +3,6 @@ import jwt from "jsonwebtoken";
 import type { User } from "@prisma/client";
 import { prisma } from "../db/prisma.js";
 
-console.log({ JWT_SECRET: process.env.JWT_SECRET });
-
 const JWT_SECRET: string = process.env.JWT_SECRET ?? "supersecret";
 
 export interface AuthenticatedUser {
@@ -14,15 +12,16 @@ export interface AuthenticatedUser {
   lastName: User["lastName"];
 }
 
-export interface LoginResult {
-  token: string;
+/** Internal result: token is set as httpOnly cookie by the controller, not sent in JSON. */
+export interface LoginWithSession {
   user: AuthenticatedUser;
+  token: string;
 }
 
 export async function login(
   email: string,
   password: string,
-): Promise<LoginResult> {
+): Promise<LoginWithSession> {
   const user: User | null = await prisma.user.findUnique({
     where: { email },
   });
