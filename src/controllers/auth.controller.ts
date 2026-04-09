@@ -1,8 +1,5 @@
 import type { Request, Response } from "express";
-import {
-  login,
-  type AuthenticatedUser,
-} from "../services/auth.service.js";
+import { login, type AuthenticatedUser } from "../services/auth.service.js";
 
 interface LoginRequestBody {
   email: string;
@@ -21,7 +18,7 @@ export async function loginController(
 
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      // secure: process.env.NODE_ENV === "production", // TODO: Uncomment this when in production and production uses HTTPS
       sameSite: "lax",
       maxAge: ONE_HOUR_MS,
       path: "/",

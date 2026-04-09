@@ -2,8 +2,8 @@ import { Router } from "express";
 import authRoutes from "./auth.routes.js";
 import healthRoutes from "./health.js";
 import userRoutes from "./user.js";
-import meRoutes from "./me.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
+import sessionRoutes from "./session.js";
 
 const router: Router = Router();
 const protectedRouter: Router = Router();
@@ -13,7 +13,7 @@ router.use("/auth", authRoutes);
 
 protectedRouter.use(authMiddleware);
 protectedRouter.use("/users", userRoutes);
-protectedRouter.use("/session/me", meRoutes);
+protectedRouter.use("/session", sessionRoutes);
 
 router.use(protectedRouter);
 

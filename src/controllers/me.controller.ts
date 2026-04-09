@@ -1,7 +1,7 @@
 import type { AuthenticatedRequest } from "../middleware/auth.middleware.js";
 import type { Response } from "express";
 import type { PublicUser } from "../services/user.service.js";
-import { getMe } from "../services/me.service.js";
+import { getMe } from "../services/session.service.js";
 
 export async function getMeController(
   req: AuthenticatedRequest,
