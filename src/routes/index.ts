@@ -13,7 +13,7 @@ router.use("/auth", authRoutes);
 
 protectedRouter.use(authMiddleware);
 protectedRouter.use("/users", userRoutes);
-protectedRouter.use("/me", meRoutes);
+protectedRouter.use("/session/me", meRoutes);
 
 router.use(protectedRouter);
 
