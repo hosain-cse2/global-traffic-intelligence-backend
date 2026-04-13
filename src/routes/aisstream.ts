@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { listVesselsController } from "../controllers/ais.controller.js";
+import { listVesselsController } from "../controllers/aisstream.controller.js";
 
 const aisRoutes: Router = Router();
 
