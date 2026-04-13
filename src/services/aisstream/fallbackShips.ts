@@ -1,4 +1,4 @@
-export type FallbackVessel = {
+export type FallbackShip = {
   mmsi: string;
   latitude: number;
   longitude: number;
@@ -218,7 +218,7 @@ function generateMmsi(index: number): string {
   return String(400000000 + index).padStart(9, "0");
 }
 
-function createFallbackVessel(index: number): FallbackVessel {
+function createFallbackShip(index: number): FallbackShip {
   const region = REGIONS[index % REGIONS.length];
   if (region === undefined) {
     throw new Error("REGIONS must not be empty");
@@ -243,7 +243,7 @@ function createFallbackVessel(index: number): FallbackVessel {
   };
 }
 
-export const fallbackVessels: FallbackVessel[] = Array.from(
+export const fallbackShips: FallbackShip[] = Array.from(
   { length: 500 },
-  (_, index) => createFallbackVessel(index),
+  (_, index) => createFallbackShip(index),
 );

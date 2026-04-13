@@ -2,7 +2,6 @@ import express, { type Express } from "express";
 import cookieParser from "cookie-parser";
 import routes from "./routes/index.js";
 import { aisStreamService } from "./services/aisstream/aisstream.service.js";
-import { vesselStore } from "./services/aisstream/vesselStore.js";
 
 const app: Express = express();
 const PORT: number = 3000;

@@ -1,11 +1,11 @@
 import type { Request, Response } from "express";
-import { vesselStore } from "../services/aisstream/vesselStore.js";
-import { fallbackVessels } from "../services/aisstream/fallbackVessels.js";
+import { shipStore } from "../services/aisstream/shipStore.js";
+import { fallbackShips } from "../services/aisstream/fallbackShips.js";
 
-const listVesselsController = async (req: Request, res: Response) => {
-  const vessels = vesselStore.getAll();
-  const result = vessels.length > 0 ? vessels : fallbackVessels;
-  res.status(200).json({ vessels: result });
+const listShipsController = async (req: Request, res: Response) => {
+  const ships = shipStore.getAll();
+  const result = ships.length > 0 ? ships : fallbackShips;
+  res.status(200).json({ ships: result });
 };
 
-export { listVesselsController };
+export { listShipsController };

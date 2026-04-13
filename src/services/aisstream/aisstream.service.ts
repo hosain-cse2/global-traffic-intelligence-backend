@@ -1,5 +1,5 @@
 import WebSocket from "ws";
-import { vesselStore, type VesselPosition } from "./vesselStore.js";
+import { shipStore, type ShipPosition } from "./shipStore.js";
 
 type BoundingBox = [[number, number], [number, number]];
 
@@ -119,7 +119,7 @@ class AisStreamService {
       return;
     }
 
-    const vessel: VesselPosition = {
+    const ship: ShipPosition = {
       mmsi: String(mmsi),
       latitude,
       longitude,
@@ -131,7 +131,9 @@ class AisStreamService {
       timestamp: metadata?.time_utc || new Date().toISOString(),
     };
 
-    vesselStore.upsert(vessel);
+    shipStore.upsert(ship);
+    console.log(`[AIS] Ship ${ship.mmsi} updated`); // TODO: remove this
+    console.log({ ship }); // TODO: remove this
   }
 
   private toOptionalNumber(value: unknown): number | undefined {
