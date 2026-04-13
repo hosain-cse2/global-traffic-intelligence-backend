@@ -4,6 +4,7 @@ import healthRoutes from "./health.js";
 import userRoutes from "./user.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 import sessionRoutes from "./session.js";
+import aisRoutes from "./aisstream.js";
 
 const router: Router = Router();
 const protectedRouter: Router = Router();
@@ -14,6 +15,7 @@ router.use("/auth", authRoutes);
 protectedRouter.use(authMiddleware);
 protectedRouter.use("/users", userRoutes);
 protectedRouter.use("/session", sessionRoutes);
+protectedRouter.use("/aisstream", aisRoutes);
 
 router.use(protectedRouter);
 
