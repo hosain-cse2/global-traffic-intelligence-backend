@@ -123,23 +123,17 @@ class AisStreamService {
       mmsi: String(mmsi),
       latitude,
       longitude,
-      sog: this.toOptionalNumber(positionReport?.Sog),
-      cog: this.toOptionalNumber(positionReport?.Cog),
-      heading: this.toOptionalNumber(positionReport?.TrueHeading),
-      navStatus: this.toOptionalNumber(positionReport?.NavigationalStatus),
-      shipName: metadata?.ShipName || undefined,
-      timestamp: metadata?.time_utc || new Date().toISOString(),
+      sog: positionReport?.Sog,
+      cog: positionReport?.Cog,
+      heading: positionReport?.TrueHeading,
+      navStatus: positionReport?.NavigationalStatus,
+      shipName: metadata.ShipName,
+      timestamp: metadata.time_utc,
     };
 
     shipStore.upsert(ship);
     console.log(`[AIS] Ship ${ship.mmsi} updated`); // TODO: remove this
     console.log({ ship }); // TODO: remove this
-  }
-
-  private toOptionalNumber(value: unknown): number | undefined {
-    return typeof value === "number" && !Number.isNaN(value)
-      ? value
-      : undefined;
   }
 
   private scheduleReconnect(): void {

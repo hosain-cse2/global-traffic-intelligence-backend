@@ -2,11 +2,11 @@ type ShipPosition = {
   mmsi: string;
   latitude: number;
   longitude: number;
-  sog?: number | undefined; // speed over ground
-  cog?: number | undefined; // course over ground
-  heading?: number | undefined;
-  navStatus?: number | undefined;
-  shipName?: string | undefined;
+  sog: number; // speed over ground
+  cog: number; // course over ground
+  heading: number;
+  navStatus: number;
+  shipName: string;
   timestamp: string;
 };
 
