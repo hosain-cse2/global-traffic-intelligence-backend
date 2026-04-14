@@ -6,6 +6,7 @@ type BoundingBox = [[number, number], [number, number]];
 type AisStreamConfig = {
   apiKey: string;
   boundingBoxes: BoundingBox[];
+  FilterMessageTypes: string[];
 };
 
 class AisStreamService {
@@ -76,20 +77,14 @@ class AisStreamService {
     }
 
     const subscriptionMessage = {
-      APIKey: process.env.AISSTREAM_API_KEY,
-      BoundingBoxes: [
-        [
-          [23, 47], // south-west (Saudi / Qatar)
-          [31, 57], // north-east (Iran / Strait of Hormuz)
-        ],
-      ],
-      FilterMessageTypes: [
-        "PositionReport",
-        "StandardClassBPositionReport",
-        "ExtendedClassBPositionReport",
-        "ShipStaticData",
-      ],
+      APIKey: this.config.apiKey,
+      BoundingBoxes: this.config.boundingBoxes,
+      FilterMessageTypes: this.config.FilterMessageTypes,
     };
+
+    console.log({ subscriptionMessage }); // TODO: remove this
+    console.log({ BoundingBoxes: this.config.boundingBoxes[0]?.[0] ?? [] }); // TODO: remove this
+    console.log({ BoundingBoxes: this.config.boundingBoxes[0]?.[1] ?? [] }); // TODO: remove this
 
     this.ws.send(JSON.stringify(subscriptionMessage));
     console.log("[AIS] Subscription sent");
@@ -157,6 +152,12 @@ const aisStreamService = new AisStreamService({
       [-90, -180],
       [90, 180],
     ],
+  ],
+  FilterMessageTypes: [
+    "PositionReport",
+    "StandardClassBPositionReport",
+    "ExtendedClassBPositionReport",
+    "ShipStaticData",
   ],
 });
 
