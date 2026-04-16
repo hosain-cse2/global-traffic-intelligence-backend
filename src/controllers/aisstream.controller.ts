@@ -7,7 +7,6 @@ import {
 
 const listShipsController = async (req: Request, res: Response<Ship[]>) => {
   const ships = shipStore.getAvailableShips();
-  console.log(JSON.stringify(ships, null, 2)); // TODO: remove this
   res.status(200).json(ships);
 };
 
