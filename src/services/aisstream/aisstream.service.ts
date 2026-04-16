@@ -1,5 +1,10 @@
 import WebSocket from "ws";
-import { shipStore, type ShipPosition } from "./shipStore.js";
+import {
+  shipStore,
+  type ShipMetadata,
+  type ShipPosition,
+} from "./shipStore.js";
+import { mapNavStatus, mapShipType } from "./helper.js";
 
 type BoundingBox = [[number, number], [number, number]];
 
@@ -46,10 +51,13 @@ class AisStreamService {
     });
 
     this.ws.on("message", (data: WebSocket.RawData) => {
-      console.log("[AIS] Message received");
       try {
         const message = JSON.parse(data.toString());
-        this.handleMessage(message);
+        if (message) {
+          this.handleMessage(message);
+        } else {
+          console.error("[AIS] Invalid message");
+        }
       } catch (error) {
         console.error("[AIS] Failed to parse message:", error);
       }
@@ -90,45 +98,58 @@ class AisStreamService {
     console.log("[AIS] Subscription sent");
   }
 
-  private handleMessage(message: any): void {
-    const positionReport =
-      message?.Message?.PositionReport ||
-      message?.Message?.StandardClassBPositionReport ||
-      message?.Message?.ExtendedClassBPositionReport;
+  private handleShipMetadata(metadata: any): ShipMetadata {
+    const mmsi = metadata.MMSI;
+    const shipName = metadata.ShipName;
+    const timestamp = metadata.time_utc;
 
-    if (!positionReport) {
-      return;
-    }
+    return { mmsi, shipName, timestamp };
+  }
 
-    const metadata = message?.MetaData;
-
-    const latitude = positionReport?.Latitude;
-    const longitude = positionReport?.Longitude;
-    const mmsi = metadata?.MMSI || positionReport?.UserID;
-
-    if (
-      typeof latitude !== "number" ||
-      typeof longitude !== "number" ||
-      !mmsi
-    ) {
-      return;
-    }
-
-    const ship: ShipPosition = {
-      mmsi: String(mmsi),
-      latitude,
-      longitude,
-      sog: positionReport?.Sog,
-      cog: positionReport?.Cog,
-      heading: positionReport?.TrueHeading,
-      navStatus: positionReport?.NavigationalStatus,
-      shipName: metadata.ShipName,
-      timestamp: metadata.time_utc,
+  private handleShipPositionMessage(positionData: any): ShipPosition {
+    const shipPosition: ShipPosition = {
+      latitude: positionData.Latitude,
+      longitude: positionData.Longitude,
+      sog: positionData.Sog,
+      cog: positionData.Cog,
+      heading: positionData.TrueHeading,
+      navStatus: mapNavStatus(positionData.NavigationalStatus),
     };
 
+    return shipPosition;
+  }
+
+  // TODO: fix this type message: any, it should be the correct type
+  private handleMessage(message: any): void {
+    let ship = shipStore.getByMmsi(message.MetaData.MMSI);
+
+    if (!ship) {
+      ship = {
+        mmsi: message.MetaData.MMSI,
+        shipName: message.MetaData.ShipName,
+        timestamp: message.MetaData.time_utc,
+        position: {
+          latitude: message.MetaData.latitude,
+          longitude: message.MetaData.longitude,
+        },
+      };
+    }
+
+    const shipPositionReport =
+      message.Message.PositionReport ||
+      message.Message.StandardClassBPositionReport ||
+      message.Message.ExtendedClassBPositionReport;
+
+    if (shipPositionReport) {
+      ship.position = this.handleShipPositionMessage(shipPositionReport);
+    } else if (message.Message.ShipStaticData) {
+      ship.type = mapShipType(message.Message.ShipStaticData.Type);
+    } else {
+      console.error("[AIS] Message is not a position report or static data");
+      return;
+    }
+
     shipStore.upsert(ship);
-    console.log(`[AIS] Ship ${ship.mmsi} updated`); // TODO: remove this
-    console.log({ ship }); // TODO: remove this
   }
 
   private scheduleReconnect(): void {
@@ -149,9 +170,13 @@ const aisStreamService = new AisStreamService({
   apiKey: process.env.AISSTREAM_API_KEY || "",
   boundingBoxes: [
     [
-      [-90, -180],
-      [90, 180],
-    ],
+      [30.0, -6.0],
+      [46.0, 36.0],
+    ], // Mediterranean Sea
+    [
+      [12.0, 42.0],
+      [30.0, 60.0],
+    ], // Persian Gulf
   ],
   FilterMessageTypes: [
     "PositionReport",
