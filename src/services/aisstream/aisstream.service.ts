@@ -169,14 +169,18 @@ class AisStreamService {
 const aisStreamService = new AisStreamService({
   apiKey: process.env.AISSTREAM_API_KEY || "",
   boundingBoxes: [
+    // [
+    //   [30.0, -6.0],
+    //   [46.0, 36.0],
+    // ], // Mediterranean Sea
+    // [
+    //   [12.0, 42.0],
+    //   [30.0, 60.0],
+    // ], // Persian Gulf
     [
-      [30.0, -6.0],
-      [46.0, 36.0],
-    ], // Mediterranean Sea
-    [
-      [12.0, 42.0],
-      [30.0, 60.0],
-    ], // Persian Gulf
+      [-90, -180],
+      [90, 180],
+    ], // Global
   ],
   FilterMessageTypes: [
     "PositionReport",
