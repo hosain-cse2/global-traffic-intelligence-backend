@@ -104,6 +104,69 @@ const REGIONS: { name: string; bbox: BoundingBox }[] = [
       [25, 122],
     ],
   },
+  {
+    name: "North Atlantic",
+    bbox: [
+      [0, -80],
+      [60, 0],
+    ],
+  },
+  {
+    name: "South Atlantic",
+    bbox: [
+      [-60, -70],
+      [0, 20],
+    ],
+  },
+  {
+    name: "Indian Ocean",
+    bbox: [
+      [-40, 20],
+      [30, 110],
+    ],
+  },
+  {
+    name: "Pacific Ocean",
+    bbox: [
+      [-60, -180],
+      [60, -80],
+    ],
+  },
+  {
+    name: "Pacific Ocean East",
+    bbox: [
+      [-60, 120],
+      [60, 180],
+    ],
+  },
+  {
+    name: "Gulf of Mexico",
+    bbox: [
+      [18, -98],
+      [31, -80],
+    ],
+  },
+  {
+    name: "Caribbean",
+    bbox: [
+      [10, -85],
+      [23, -60],
+    ],
+  },
+  {
+    name: "East China Sea",
+    bbox: [
+      [24, 118],
+      [35, 131],
+    ],
+  },
+  {
+    name: "Sea of Japan",
+    bbox: [
+      [35, 130],
+      [50, 142],
+    ],
+  },
 ];
 
 const isPointInBBox = (
@@ -147,6 +210,8 @@ export function countShipsByRegion(ships: Ship[]): Record<string, number> {
 
 export function getTopRegion(ships: Ship[]): TopRegionResult | null {
   const counts = countShipsByRegion(ships);
+
+  console.log(counts);
 
   let topRegion: string | null = null;
   let topCount = 0;
