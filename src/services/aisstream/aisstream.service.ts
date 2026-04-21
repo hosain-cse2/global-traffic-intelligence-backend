@@ -4,9 +4,12 @@ import {
   type ShipMetadata,
   type ShipPosition,
 } from "./shipStore.js";
-import { mapNavStatus, mapShipType } from "./helper.js";
-
-type BoundingBox = [[number, number], [number, number]];
+import {
+  mapNavStatus,
+  mapRegion,
+  mapShipType,
+  type BoundingBox,
+} from "./helper.js";
 
 type AisStreamConfig = {
   apiKey: string;
@@ -110,6 +113,7 @@ class AisStreamService {
     const shipPosition: ShipPosition = {
       latitude: positionData.Latitude,
       longitude: positionData.Longitude,
+      region: mapRegion(positionData.Latitude, positionData.Longitude),
       sog: positionData.Sog,
       cog: positionData.Cog,
       heading: positionData.TrueHeading,
@@ -123,7 +127,9 @@ class AisStreamService {
   private handleMessage(message: any): void {
     let ship = shipStore.getByMmsi(message.MetaData.MMSI);
 
-    if (!ship) {
+    const shipAlreadyExists = !!ship;
+
+    if (!shipAlreadyExists) {
       ship = {
         mmsi: message.MetaData.MMSI,
         shipName: message.MetaData.ShipName,
@@ -131,6 +137,10 @@ class AisStreamService {
         position: {
           latitude: message.MetaData.latitude,
           longitude: message.MetaData.longitude,
+          region: mapRegion(
+            message.MetaData.latitude,
+            message.MetaData.longitude,
+          ),
         },
       };
     }
@@ -140,9 +150,16 @@ class AisStreamService {
       message.Message.StandardClassBPositionReport ||
       message.Message.ExtendedClassBPositionReport;
 
-    if (shipPositionReport) {
-      ship.position = this.handleShipPositionMessage(shipPositionReport);
-    } else if (message.Message.ShipStaticData) {
+    if (ship && shipPositionReport) {
+      const shipPosition = this.handleShipPositionMessage(shipPositionReport);
+      if (shipPosition.heading !== 511) {
+        ship.position = shipPosition;
+      } else {
+        shipStore.remove(ship.mmsi);
+        return;
+      }
+      ship.position = shipPosition;
+    } else if (ship && message.Message.ShipStaticData) {
       ship.type = mapShipType(message.Message.ShipStaticData.Type);
     } else {
       console.error("[AIS] Message is not a position report or static data");

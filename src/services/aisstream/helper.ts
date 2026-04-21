@@ -1,3 +1,5 @@
+import type { Ship } from "./shipStore.js";
+
 export const mapShipType = (type?: number): string => {
   if (type == null) return "unknown";
 
@@ -50,3 +52,116 @@ export const mapNavStatus = (status?: number): string => {
       return "unknown";
   }
 };
+
+export type BoundingBox = [[number, number], [number, number]];
+const REGIONS: { name: string; bbox: BoundingBox }[] = [
+  {
+    name: "Mediterranean",
+    bbox: [
+      [30, -6],
+      [46, 36],
+    ],
+  },
+  {
+    name: "North Sea",
+    bbox: [
+      [51, -4],
+      [62, 9],
+    ],
+  },
+  {
+    name: "Baltic Sea",
+    bbox: [
+      [53, 9],
+      [66, 31],
+    ],
+  },
+  {
+    name: "Black Sea",
+    bbox: [
+      [40, 27],
+      [47, 42],
+    ],
+  },
+  {
+    name: "Arabian Gulf",
+    bbox: [
+      [24, 47],
+      [31, 57],
+    ],
+  },
+  {
+    name: "Red Sea",
+    bbox: [
+      [12, 32],
+      [30, 44],
+    ],
+  },
+  {
+    name: "South China Sea",
+    bbox: [
+      [0, 100],
+      [25, 122],
+    ],
+  },
+];
+
+const isPointInBBox = (
+  lat: number,
+  lng: number,
+  bbox: BoundingBox,
+): boolean => {
+  const [[minLat, minLng], [maxLat, maxLng]] = bbox;
+
+  return lat >= minLat && lat <= maxLat && lng >= minLng && lng <= maxLng;
+};
+
+export const mapRegion = (lat: number, lng: number): string => {
+  for (const region of REGIONS) {
+    if (isPointInBBox(lat, lng, region.bbox)) {
+      return region.name;
+    }
+  }
+
+  return "Other";
+};
+
+type TopRegionResult = {
+  region: string;
+  count: number;
+};
+
+export function countShipsByRegion(ships: Ship[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+
+  for (const ship of ships) {
+    const region = ship.position?.region;
+
+    if (!region) continue;
+
+    counts[region] = (counts[region] ?? 0) + 1;
+  }
+
+  return counts;
+}
+
+export function getTopRegion(ships: Ship[]): TopRegionResult | null {
+  const counts = countShipsByRegion(ships);
+
+  let topRegion: string | null = null;
+  let topCount = 0;
+
+  for (const [region, count] of Object.entries(counts)) {
+    if (count > topCount) {
+      topRegion = region;
+      topCount = count;
+    }
+  }
+
+  if (!topRegion) return null;
+
+  return {
+    region: topRegion,
+    count: topCount,
+  };
+}

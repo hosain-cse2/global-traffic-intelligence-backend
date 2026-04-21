@@ -7,6 +7,7 @@ type ShipMetadata = {
 type ShipPosition = {
   latitude: number;
   longitude: number;
+  region?: string;
   sog?: number; // speed over ground
   cog?: number; // course over ground
   heading?: number;
