@@ -1,10 +1,16 @@
-import { getTopRegion } from "./aisstream/helper.js";
+import {
+  getShipCountByRegion,
+  getShipCountByType,
+  getTopRegion,
+} from "./aisstream/helper.js";
 import { shipStore, type Ship } from "./aisstream/shipStore.js";
 
 export type DashboardStats = {
   totalShips: number;
   highSpeedShips: number;
   topRegions: { name: string; count: number } | null;
+  shipCountByType: { type: string; count: number }[];
+  shipCountByRegion: { region: string; count: number }[];
 };
 
 const HIGH_SPEED_THRESHOLD = 20;
@@ -23,6 +29,8 @@ const getDashboardStats = async (): Promise<DashboardStats> => {
     topRegions: topRegion
       ? { name: topRegion.region, count: topRegion.count }
       : null,
+    shipCountByType: getShipCountByType(ships),
+    shipCountByRegion: getShipCountByRegion(ships),
   };
 };
 

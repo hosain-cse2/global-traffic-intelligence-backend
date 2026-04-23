@@ -211,8 +211,6 @@ export function countShipsByRegion(ships: Ship[]): Record<string, number> {
 export function getTopRegion(ships: Ship[]): TopRegionResult | null {
   const counts = countShipsByRegion(ships);
 
-  console.log(counts);
-
   let topRegion: string | null = null;
   let topCount = 0;
 
@@ -229,4 +227,33 @@ export function getTopRegion(ships: Ship[]): TopRegionResult | null {
     region: topRegion,
     count: topCount,
   };
+}
+
+export const ShipType: string[] = [
+  "cargo",
+  "tanker",
+  "passenger",
+  "fishing",
+  "sailing",
+  "pleasure",
+  "tug",
+  "other",
+];
+
+export function getShipCountByType(
+  ships: Ship[],
+): { type: string; count: number }[] {
+  return ShipType.map((type) => ({
+    type,
+    count: ships.filter((ship) => ship.type === type).length,
+  }));
+}
+
+export function getShipCountByRegion(
+  ships: Ship[],
+): { region: string; count: number }[] {
+  return REGIONS.map((region) => ({
+    region: region.name,
+    count: ships.filter((ship) => ship.position?.region === region.name).length,
+  }));
 }
