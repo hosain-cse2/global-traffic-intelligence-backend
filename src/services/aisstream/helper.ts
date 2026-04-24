@@ -257,3 +257,37 @@ export function getShipCountByRegion(
     count: ships.filter((ship) => ship.position?.region === region.name).length,
   }));
 }
+
+export function getMovementState(
+  ships: Ship[],
+): { state: string; count: number }[] {
+  return [
+    {
+      state: "stationary",
+      count: ships.filter((ship) => ship.position?.sog && ship.position.sog < 1)
+        .length,
+    },
+    {
+      state: "slow",
+      count: ships.filter(
+        (ship) =>
+          ship.position?.sog && ship.position.sog >= 1 && ship.position.sog < 5,
+      ).length,
+    },
+    {
+      state: "normal",
+      count: ships.filter(
+        (ship) =>
+          ship.position?.sog &&
+          ship.position.sog >= 5 &&
+          ship.position.sog < 20,
+      ).length,
+    },
+    {
+      state: "fast",
+      count: ships.filter(
+        (ship) => ship.position?.sog && ship.position.sog > 20,
+      ).length,
+    },
+  ];
+}

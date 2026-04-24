@@ -1,4 +1,5 @@
 import {
+  getMovementState,
   getShipCountByRegion,
   getShipCountByType,
   getTopRegion,
@@ -9,8 +10,9 @@ export type DashboardStats = {
   totalShips: number;
   highSpeedShips: number;
   topRegions: { name: string; count: number } | null;
-  shipCountByType: { type: string; count: number }[];
-  shipCountByRegion: { region: string; count: number }[];
+  shipCountByType: { type: string; count: number }[]; // TODO: need common type for this
+  shipCountByRegion: { region: string; count: number }[]; // TODO: need common type for this
+  movementState: { state: string; count: number }[]; // TODO: need common type for this
 };
 
 const HIGH_SPEED_THRESHOLD = 20;
@@ -31,6 +33,7 @@ const getDashboardStats = async (): Promise<DashboardStats> => {
       : null,
     shipCountByType: getShipCountByType(ships),
     shipCountByRegion: getShipCountByRegion(ships),
+    movementState: getMovementState(ships),
   };
 };
 
