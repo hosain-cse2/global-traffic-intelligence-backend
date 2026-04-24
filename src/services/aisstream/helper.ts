@@ -249,12 +249,22 @@ export function getShipCountByType(
   }));
 }
 
+type TrafficLevel = "low" | "medium" | "high" | "not traffic";
+
 export type RegionalTraffic = {
   region: string;
   totalShips: number;
   movingShips: number;
   stationaryShips: number;
+  trafficLevel: TrafficLevel;
 };
+
+function getTrafficLevel(count: number): TrafficLevel {
+  if (count > 3000) return "high";
+  if (count > 1000) return "medium";
+  if (count > 0) return "low";
+  return "not traffic";
+}
 
 export function getRegionTrafficList(ships: Ship[]): RegionalTraffic[] {
   return REGIONS.map((region) => ({
@@ -273,6 +283,9 @@ export function getRegionTrafficList(ships: Ship[]): RegionalTraffic[] {
         ship.position.sog < 1 &&
         ship.position?.region === region.name,
     ).length,
+    trafficLevel: getTrafficLevel(
+      ships.filter((ship) => ship.position?.region === region.name).length,
+    ),
   }));
 }
 
