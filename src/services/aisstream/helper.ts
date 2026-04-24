@@ -249,12 +249,30 @@ export function getShipCountByType(
   }));
 }
 
-export function getShipCountByRegion(
-  ships: Ship[],
-): { region: string; count: number }[] {
+export type RegionalTraffic = {
+  region: string;
+  totalShips: number;
+  movingShips: number;
+  stationaryShips: number;
+};
+
+export function getRegionTrafficList(ships: Ship[]): RegionalTraffic[] {
   return REGIONS.map((region) => ({
     region: region.name,
-    count: ships.filter((ship) => ship.position?.region === region.name).length,
+    totalShips: ships.filter((ship) => ship.position?.region === region.name)
+      .length,
+    movingShips: ships.filter(
+      (ship) =>
+        ship.position?.sog &&
+        ship.position.sog > 1 &&
+        ship.position?.region === region.name,
+    ).length,
+    stationaryShips: ships.filter(
+      (ship) =>
+        ship.position?.sog &&
+        ship.position.sog < 1 &&
+        ship.position?.region === region.name,
+    ).length,
   }));
 }
 

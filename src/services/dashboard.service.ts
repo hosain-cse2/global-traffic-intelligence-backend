@@ -1,8 +1,9 @@
 import {
   getMovementState,
-  getShipCountByRegion,
+  getRegionTrafficList,
   getShipCountByType,
   getTopRegion,
+  type RegionalTraffic,
 } from "./aisstream/helper.js";
 import { shipStore, type Ship } from "./aisstream/shipStore.js";
 
@@ -11,7 +12,7 @@ export type DashboardStats = {
   highSpeedShips: number;
   topRegions: { name: string; count: number } | null;
   shipCountByType: { type: string; count: number }[]; // TODO: need common type for this
-  shipCountByRegion: { region: string; count: number }[]; // TODO: need common type for this
+  regionalTrafficList: RegionalTraffic[]; // TODO: need common type for this
   movementState: { state: string; count: number }[]; // TODO: need common type for this
 };
 
@@ -32,7 +33,7 @@ const getDashboardStats = async (): Promise<DashboardStats> => {
       ? { name: topRegion.region, count: topRegion.count }
       : null,
     shipCountByType: getShipCountByType(ships),
-    shipCountByRegion: getShipCountByRegion(ships),
+    regionalTrafficList: getRegionTrafficList(ships),
     movementState: getMovementState(ships),
   };
 };
