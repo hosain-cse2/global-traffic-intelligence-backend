@@ -298,5 +298,9 @@ export function getMovementState(
         (ship) => ship.position?.sog && ship.position.sog > 25,
       ).length,
     },
-  ].sort((a, b) => b.count - a.count);
+    {
+      state: "unknown",
+      count: ships.filter((ship) => !ship.position?.sog).length,
+    },
+  ].sort((a, b) => a.count - b.count);
 }
