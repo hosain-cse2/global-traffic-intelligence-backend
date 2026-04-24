@@ -286,8 +286,17 @@ export function getMovementState(
     {
       state: "fast",
       count: ships.filter(
-        (ship) => ship.position?.sog && ship.position.sog > 20,
+        (ship) =>
+          ship.position?.sog &&
+          ship.position.sog > 20 &&
+          ship.position.sog < 25,
       ).length,
     },
-  ];
+    {
+      state: "very fast",
+      count: ships.filter(
+        (ship) => ship.position?.sog && ship.position.sog > 25,
+      ).length,
+    },
+  ].sort((a, b) => b.count - a.count);
 }
