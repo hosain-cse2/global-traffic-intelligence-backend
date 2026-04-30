@@ -7,7 +7,7 @@ import {
 import {
   getDashboardStats,
   type DashboardStats,
-} from "../services/dashboard.service.js";
+} from "../services/dashboard/dashboard.service.js";
 
 const listShipsController = async (_req: Request, res: Response<Ship[]>) => {
   const ships = shipStore.getAll();

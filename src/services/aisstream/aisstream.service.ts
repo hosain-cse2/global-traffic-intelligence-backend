@@ -1,15 +1,7 @@
 import WebSocket from "ws";
-import {
-  shipStore,
-  type ShipMetadata,
-  type ShipPosition,
-} from "./shipStore.js";
-import {
-  mapNavStatus,
-  mapRegion,
-  mapShipType,
-  type BoundingBox,
-} from "./helper.js";
+import { shipStore, type ShipPosition } from "./shipStore.js";
+import { mapNavStatus, mapRegion, mapShipType } from "./helper.js";
+import type { BoundingBox } from "../dashboard/helper.js";
 
 type AisStreamConfig = {
   apiKey: string;
@@ -101,14 +93,6 @@ class AisStreamService {
     console.log("[AIS] Subscription sent");
   }
 
-  private handleShipMetadata(metadata: any): ShipMetadata {
-    const mmsi = metadata.MMSI;
-    const shipName = metadata.ShipName;
-    const timestamp = metadata.time_utc;
-
-    return { mmsi, shipName, timestamp };
-  }
-
   private handleShipPositionMessage(positionData: any): ShipPosition {
     const shipPosition: ShipPosition = {
       latitude: positionData.Latitude,
@@ -186,14 +170,6 @@ class AisStreamService {
 const aisStreamService = new AisStreamService({
   apiKey: process.env.AISSTREAM_API_KEY || "",
   boundingBoxes: [
-    // [
-    //   [30.0, -6.0],
-    //   [46.0, 36.0],
-    // ], // Mediterranean Sea
-    // [
-    //   [12.0, 42.0],
-    //   [30.0, 60.0],
-    // ], // Persian Gulf
     [
       [-90, -180],
       [90, 180],

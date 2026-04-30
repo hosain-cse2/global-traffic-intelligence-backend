@@ -3,9 +3,9 @@ import {
   getRegionTrafficList,
   getShipCountByType,
   getTopRegion,
-  type RegionalTraffic,
-} from "./aisstream/helper.js";
-import { shipStore, type Ship } from "./aisstream/shipStore.js";
+} from "./helper.js";
+import { shipStore, type Ship } from "../aisstream/shipStore.js";
+import type { RegionalTraffic } from "./helper.js";
 
 export type DashboardStats = {
   totalShips: number;
