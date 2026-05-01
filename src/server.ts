@@ -3,6 +3,9 @@ import cookieParser from "cookie-parser";
 import routes from "./routes/index.js";
 import { aisStreamService } from "./services/aisstream/aisstream.service.js";
 import { startShipStoreCleanup } from "./services/aisstream/cleanup.js";
+import http from "http";
+import { startWebSocketServer } from "./services/websocket/ws.server.js";
+import { broadcastShip } from "./services/aisstream/ship.broadcast.js";
 
 const app: Express = express();
 const PORT: number = 3000;
@@ -11,10 +14,17 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/api", routes);
 
-app.listen(PORT, () => {
+const server = http.createServer(app);
+
+startWebSocketServer(server);
+console.log("[WS] WebSocket server started");
+
+server.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
   aisStreamService.start();
   console.log("[AIS] AISStream service started");
   startShipStoreCleanup();
   console.log("[AIS] Ship store cleanup started");
+  broadcastShip();
+  console.log("[AIS] Ship broadcast started");
 });
