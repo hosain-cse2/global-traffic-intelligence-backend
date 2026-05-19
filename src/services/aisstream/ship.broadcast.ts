@@ -8,5 +8,5 @@ export function broadcastShip() {
       type: "ships:snapshot",
       payload: ships,
     });
-  }, 5000);
+  }, 60000);
 }

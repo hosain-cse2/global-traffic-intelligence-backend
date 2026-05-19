@@ -8,7 +8,7 @@ import { startWebSocketServer } from "./services/websocket/ws.server.js";
 import { broadcastShip } from "./services/aisstream/ship.broadcast.js";
 
 const app: Express = express();
-const PORT: number = 3000;
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT) : 3000;
 
 app.use(express.json());
 app.use(cookieParser());
