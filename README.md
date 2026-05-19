@@ -1,13 +1,33 @@
 # Global Traffic Intelligence Backend
 
-## Build
+Run everything from the repository root with a `.env` file present. The stack uses [Docker Compose](https://docs.docker.com/compose/) (Postgres + backend).
+
+## Starting the application
+
+Build images and start Postgres plus the backend in the foreground:
 
 ```bash
-docker build -t global-traffic-backend .
+docker compose up --build
 ```
 
-## Run
+Start in the background (detached):
 
 ```bash
-docker run --env-file .env -p 8000:3000 global-traffic-backend
+docker compose up --build -d
+```
+
+The API is reachable at **http://localhost:8000** (see `ports` under the `backend` service in `docker-compose.yml`).
+
+## Stopping the application
+
+Stop and remove containers. Named volumes are kept (Postgres data remains):
+
+```bash
+docker compose down
+```
+
+Also remove volumes so the database starts empty next time:
+
+```bash
+docker compose down -v
 ```
