@@ -25,7 +25,7 @@ jobs:
         env:
           # Not used to connect; required so Prisma can load schema with env("DATABASE_URL")
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
-        run: npm run prisma:generate
+        run: npx prisma generate
 
       - name: Run lint
         run: npm run lint
