@@ -21,6 +21,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Generate Prisma Client
+        env:
+          # Not used to connect; required so Prisma can load schema with env("DATABASE_URL")
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+        run: prisma:generate
+
       - name: Run lint
         run: npm run lint
 
