@@ -21,6 +21,7 @@ async function main() {
         lastName: "Brown",
       },
     ],
+    skipDuplicates: true,
   });
 
   console.log("Seeded users successfully");

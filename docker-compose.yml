@@ -26,7 +26,7 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@postgres:5432/global_traffic_intelligence?schema=public
     ports:
-      - "8000:8000"
+      - "8000:3000"
     depends_on:
       - postgres
 
