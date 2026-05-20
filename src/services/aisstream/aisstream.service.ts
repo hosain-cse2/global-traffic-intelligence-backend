@@ -54,7 +54,9 @@ class AisStreamService {
   private connect(): void {
     console.log("[AIS] Connecting to AISStream...");
 
-    this.ws = new WebSocket("wss://stream.aisstream.io/v0/stream");
+    this.ws = new WebSocket("wss://stream.aisstream.io/v0/stream", {
+      rejectUnauthorized: false, // TODO: remove this later when AISStream is using a valid certificate
+    });
 
     this.ws.on("open", () => {
       console.log("[AIS] Connected");
