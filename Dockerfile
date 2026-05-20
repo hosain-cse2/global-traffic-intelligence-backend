@@ -7,6 +7,10 @@ RUN npm ci
 
 COPY . .
 
+# prisma.config.ts requires DATABASE_URL when the CLI loads; generate does not open a DB connection.
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
 RUN npm run prisma:generate
 RUN npm run build
 
