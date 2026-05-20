@@ -1,9 +1,5 @@
 import type { Request, Response } from "express";
-import {
-  shipStore,
-  type Ship,
-  type ShipPosition,
-} from "../services/aisstream/shipStore.js";
+import { shipStore, type Ship } from "../services/aisstream/shipStore.js";
 import {
   getDashboardStats,
   type DashboardStats,

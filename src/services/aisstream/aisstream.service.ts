@@ -3,6 +3,22 @@ import { shipStore, type ShipPosition } from "./shipStore.js";
 import { mapNavStatus, mapRegion, mapShipType } from "./helper.js";
 import type { BoundingBox } from "../dashboard/helper.js";
 
+type AisStreamInboundMessage = {
+  MetaData: {
+    MMSI: string;
+    ShipName: string;
+    time_utc: string;
+    latitude: number;
+    longitude: number;
+  };
+  Message: {
+    PositionReport?: Record<string, unknown>;
+    StandardClassBPositionReport?: Record<string, unknown>;
+    ExtendedClassBPositionReport?: Record<string, unknown>;
+    ShipStaticData?: { Type?: unknown };
+  };
+};
+
 type AisStreamConfig = {
   apiKey: string;
   boundingBoxes: BoundingBox[];
@@ -47,8 +63,8 @@ class AisStreamService {
 
     this.ws.on("message", (data: WebSocket.RawData) => {
       try {
-        const message = JSON.parse(data.toString());
-        if (message) {
+        const message: unknown = JSON.parse(data.toString());
+        if (message && typeof message === "object") {
           this.handleMessage(message);
         } else {
           console.error("[AIS] Invalid message");
@@ -93,22 +109,26 @@ class AisStreamService {
     console.log("[AIS] Subscription sent");
   }
 
-  private handleShipPositionMessage(positionData: any): ShipPosition {
+  private handleShipPositionMessage(
+    positionData: Record<string, unknown>,
+  ): ShipPosition {
+    const latitude = Number(positionData.Latitude);
+    const longitude = Number(positionData.Longitude);
     const shipPosition: ShipPosition = {
-      latitude: positionData.Latitude,
-      longitude: positionData.Longitude,
-      region: mapRegion(positionData.Latitude, positionData.Longitude),
-      sog: positionData.Sog,
-      cog: positionData.Cog,
-      heading: positionData.TrueHeading,
-      navStatus: mapNavStatus(positionData.NavigationalStatus),
+      latitude,
+      longitude,
+      region: mapRegion(latitude, longitude),
+      sog: Number(positionData.Sog),
+      cog: Number(positionData.Cog),
+      heading: Number(positionData.TrueHeading),
+      navStatus: mapNavStatus(Number(positionData.NavigationalStatus)),
     };
 
     return shipPosition;
   }
 
-  // TODO: fix this type message: any, it should be the correct type
-  private handleMessage(message: any): void {
+  private handleMessage(raw: unknown): void {
+    const message = raw as AisStreamInboundMessage;
     let ship = shipStore.getByMmsi(message.MetaData.MMSI);
 
     const shipAlreadyExists = !!ship;
@@ -144,7 +164,7 @@ class AisStreamService {
       }
       ship.position = shipPosition;
     } else if (ship && message.Message.ShipStaticData) {
-      ship.type = mapShipType(message.Message.ShipStaticData.Type);
+      ship.type = mapShipType(Number(message.Message.ShipStaticData.Type));
     } else {
       console.error("[AIS] Message is not a position report or static data");
       return;

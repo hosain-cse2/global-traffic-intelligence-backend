@@ -25,7 +25,7 @@ export async function loginController(
     });
 
     res.json({ user });
-  } catch (error) {
+  } catch {
     res.status(401).json({
       message: "Invalid email or password",
     });
