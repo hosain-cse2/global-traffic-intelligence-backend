@@ -6,9 +6,15 @@ on:
       - main
 
 jobs:
-  lint-build-docker:
+  source:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+  build-and-lint:
+    needs: source
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,6 +38,13 @@ jobs:
 
       - name: Run build
         run: npm run build
+
+  docker-build-deploy:
+    needs: build-and-lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Login to Docker Hub
         uses: docker/login-action@v3
